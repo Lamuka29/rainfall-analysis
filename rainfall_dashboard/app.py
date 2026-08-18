@@ -167,6 +167,14 @@ RAINFALL_MAX = 500
 
 st.sidebar.header("🎨 Plot Settings")
 
+# ------------------------------------------------------------
+# FILE / STATION LIST
+# ------------------------------------------------------------
+
+file_names_for_color = [
+    uploaded_file.name
+    for uploaded_file in uploaded_files
+]
 
 # ============================================================
 # BACKGROUND
@@ -388,21 +396,7 @@ if not uploaded_files:
         "Sila upload sekurang-kurangnya satu fail Excel."
     )
 
-    st.markdown(
-        """
-        **Format data yang diperlukan:**
-
-        - Sheet dinamakan mengikut tahun, contoh `2016`, `2017`, ..., `2025`
-        - Header berada pada baris ke-7 Excel
-        - Column A = `hari`
-        - Column B:M = `Jan` hingga `Dec`
-        - `N.A.` / kosong = missing
-        - `0.0 mm` = data sah
-        """
-    )
-
     st.stop()
-
 
 # ============================================================
 # FUNCTION
