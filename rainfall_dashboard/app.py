@@ -1363,9 +1363,23 @@ if failed_results:
 
 
 if not successful_results:
-
     st.stop()
 
+# ============================================================
+# STATION SELECTION
+# ============================================================
+
+station_options = {
+    result["original_file_name"]: result
+    result = selected_result
+}
+
+selected_station = st.sidebar.selectbox(
+    "📍 Select Station",
+    list(station_options.keys())
+)
+
+selected_result = station_options[selected_station]
 
 # ============================================================
 # GLOBAL AUTO Y-AXIS
@@ -1381,7 +1395,7 @@ max_mean_file = None
 max_mean_month = None
 
 
-for result in successful_results:
+result = selected_result
 
     rainfall_target = result[
         "rainfall_target"
@@ -1529,7 +1543,7 @@ with st.expander(
 # DISPLAY EACH FILE
 # ============================================================
 
-for result in successful_results:
+result = selected_result
 
     file_name = result[
         "file_name"
@@ -3038,7 +3052,7 @@ with zipfile.ZipFile(
     zipfile.ZIP_DEFLATED
 ) as zip_file:
 
-    for result in successful_results:
+    result = selected_result
 
         file_name = result[
             "file_name"
