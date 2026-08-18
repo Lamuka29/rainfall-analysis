@@ -1,4 +1,4 @@
-app_code = r'''import pandas as pd
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -1363,11 +1363,6 @@ st.caption(
     "🌧️ Rainfall Data Analysis | Quality Control, "
     "Climatological Mean, Anomaly and Statistical Analysis"
 )
-'''
-
-path = "/mnt/data/app.py"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(app_code)
 
 print(f"Created {path}")
 print(f"Lines: {len(app_code.splitlines())}")
