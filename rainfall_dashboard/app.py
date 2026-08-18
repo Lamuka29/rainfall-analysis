@@ -1371,7 +1371,7 @@ if not successful_results:
 
 station_options = {
     result["original_file_name"]: result
-    result = selected_result
+    for result in successful_results
 }
 
 selected_station = st.sidebar.selectbox(
@@ -1380,6 +1380,19 @@ selected_station = st.sidebar.selectbox(
 )
 
 selected_result = station_options[selected_station]
+
+
+# ============================================================
+# DISPLAY SELECTED STATION ONLY
+# ============================================================
+
+result = selected_result
+
+file_name = result["file_name"]
+original_file_name = result["original_file_name"]
+
+all_daily = result["all_daily"]
+yearly_monthly_total = result["yearly_monthly_total"]
 
 # ============================================================
 # GLOBAL AUTO Y-AXIS
