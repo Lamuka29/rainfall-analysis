@@ -2877,8 +2877,8 @@ for result in successful_results:
             - `> {SUSPECT_RAINFALL:.0f} mm` = suspect
             - `> {EXTREME_RAINFALL:.0f} mm` = extreme
             - Negative rainfall = invalid / dibuang
-            - Missing days `> {MAX_MISSING_DAYS}` = bulan ditolak
-            - Missing berturut-turut `> {MAX_CONSECUTIVE_MISSING}` = bulan ditolak
+            - Missing days `> {MAX_MISSING_DAYS}` = bulan ditolak (Standard WMO: Missing days > 10)
+            - Missing berturut-turut `> {MAX_CONSECUTIVE_MISSING}` = bulan ditolak (Standard WMO: Missing berturut-turut > 4)
             """
         )
 
