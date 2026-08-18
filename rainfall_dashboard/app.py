@@ -82,6 +82,23 @@ target_year = st.sidebar.number_input(
 
 target_year = int(target_year)
 
+# ============================================================
+# FILE UPLOAD
+# ============================================================
+
+uploaded_files = st.file_uploader(
+    "📁 Upload Excel file",
+    type=["xlsx", "xls"],
+    accept_multiple_files=True
+)
+
+if not uploaded_files:
+
+    st.info(
+        "Sila upload sekurang-kurangnya satu fail Excel."
+    )
+
+    st.stop()
 
 # ============================================================
 # WMO MISSING DATA RULE
@@ -378,25 +395,6 @@ BACKGROUND_COLORS = {
     "_ PUSAT PEMULIHAN ORANG UTAN SEPILOK.xlsx": "#EAF4F8",
     "Tawau Agriculture 1995 - 2025.xlsx": "#F5F0E6"
 }
-
-
-# ============================================================
-# FILE UPLOAD
-# ============================================================
-
-uploaded_files = st.file_uploader(
-    "📁 Upload Excel file",
-    type=["xlsx", "xls"],
-    accept_multiple_files=True
-)
-
-if not uploaded_files:
-
-    st.info(
-        "Sila upload sekurang-kurangnya satu fail Excel."
-    )
-
-    st.stop()
 
 # ============================================================
 # FUNCTION
