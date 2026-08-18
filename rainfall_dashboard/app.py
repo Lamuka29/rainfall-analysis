@@ -167,13 +167,21 @@ RAINFALL_MAX = 500
 
 st.sidebar.header("🎨 Plot Settings")
 
-# Background
+
+# ============================================================
+# BACKGROUND
+# ============================================================
+
 BG_COLOR = st.sidebar.color_picker(
     "Background Graf",
     "#FFFFFF"
 )
 
-# Warna bar setiap bulan
+
+# ============================================================
+# DEFAULT BAR COLORS - MONTHLY RAINFALL
+# ============================================================
+
 default_colors = [
     "#4682B4",  # Jan
     "#87CEEB",  # Feb
@@ -189,34 +197,167 @@ default_colors = [
     "#008080"   # Dec
 ]
 
-BAR_COLORS = []
 
-for month, default_color in zip(months, default_colors):
+# ============================================================
+# SESSION STATE
+# Supaya warna yang dipilih tidak reset
+# ============================================================
 
-    color = st.sidebar.color_picker(
-        f"{month} Bar",
-        default_color
+if "bar_colors" not in st.session_state:
+
+    st.session_state.bar_colors = default_colors.copy()
+
+
+if "max_daily_color" not in st.session_state:
+
+    st.session_state.max_daily_color = "#FF6347"
+
+
+if "wet_days_color" not in st.session_state:
+
+    st.session_state.wet_days_color = "#3CB371"
+
+
+if "std_color" not in st.session_state:
+
+    st.session_state.std_color = "#9370DB"
+
+
+if "hist_color" not in st.session_state:
+
+    st.session_state.hist_color = "#4682B4"
+
+
+# ============================================================
+# SELECT BAR CHART
+# ============================================================
+
+chart_options = [
+    "Monthly Rainfall",
+    "Maximum Daily Rainfall",
+    "Wet Days",
+    "Standard Deviation",
+    "Histogram"
+]
+
+selected_chart = st.sidebar.selectbox(
+    "Select Bar Chart",
+    chart_options
+)
+
+
+# ============================================================
+# MONTHLY RAINFALL
+# ============================================================
+
+if selected_chart == "Monthly Rainfall":
+
+    selected_month = st.sidebar.selectbox(
+        "Select Month",
+        months
     )
 
-    BAR_COLORS.append(color)
+    selected_index = months.index(
+        selected_month
+    )
 
-# Mean line
+    st.session_state.bar_colors[
+        selected_index
+    ] = st.sidebar.color_picker(
+        f"{selected_month} Bar Colour",
+        st.session_state.bar_colors[selected_index]
+    )
+
+
+# ============================================================
+# MAXIMUM DAILY RAINFALL
+# ============================================================
+
+elif selected_chart == "Maximum Daily Rainfall":
+
+    st.session_state.max_daily_color = (
+        st.sidebar.color_picker(
+            "Maximum Daily Rainfall Colour",
+            st.session_state.max_daily_color
+        )
+    )
+
+
+# ============================================================
+# WET DAYS
+# ============================================================
+
+elif selected_chart == "Wet Days":
+
+    st.session_state.wet_days_color = (
+        st.sidebar.color_picker(
+            "Wet Days Colour",
+            st.session_state.wet_days_color
+        )
+    )
+
+
+# ============================================================
+# STANDARD DEVIATION
+# ============================================================
+
+elif selected_chart == "Standard Deviation":
+
+    st.session_state.std_color = (
+        st.sidebar.color_picker(
+            "Standard Deviation Colour",
+            st.session_state.std_color
+        )
+    )
+
+
+# ============================================================
+# HISTOGRAM
+# ============================================================
+
+elif selected_chart == "Histogram":
+
+    st.session_state.hist_color = (
+        st.sidebar.color_picker(
+            "Histogram Colour",
+            st.session_state.hist_color
+        )
+    )
+
+
+# ============================================================
+# MEAN LINE
+# ============================================================
+
 LINE_COLOR = st.sidebar.color_picker(
     "Mean Line",
     "#000000"
 )
 
-# Minimum
+
+# ============================================================
+# MINIMUM
+# ============================================================
+
 MIN_COLOR = st.sidebar.color_picker(
     "Minimum",
     "#008000"
 )
 
-# Maximum
+
+# ============================================================
+# MAXIMUM
+# ============================================================
+
 MAX_COLOR = st.sidebar.color_picker(
     "Maximum",
     "#FF0000"
 )
+
+
+# ============================================================
+# FIGURE SIZE
+# ============================================================
 
 FIG_WIDTH = 14
 FIG_HEIGHT = 9
@@ -1731,7 +1872,7 @@ for result in successful_results:
             x,
             rainfall_target.values,
             width=0.60,
-            color=BAR_COLORS,
+            color=st.session_state.bar_colors,
             edgecolor="black",
             linewidth=0.8,
             label=(
@@ -2286,7 +2427,7 @@ for result in successful_results:
             x,
             max_daily,
             width=0.60,
-            color="tomato",
+            color=st.session_state.max_daily_color,
             edgecolor="black",
             linewidth=0.8
         )
@@ -2380,7 +2521,7 @@ for result in successful_results:
             x,
             wet_days,
             width=0.60,
-            color="mediumseagreen",
+            color=st.session_state.wet_days_color,
             edgecolor="black",
             linewidth=0.8
         )
@@ -2474,7 +2615,7 @@ for result in successful_results:
             x,
             std_daily,
             width=0.60,
-            color="mediumpurple",
+            color=st.session_state.std_color,
             edgecolor="black",
             linewidth=0.8
         )
@@ -2568,7 +2709,7 @@ for result in successful_results:
             ax.hist(
                 hist_values,
                 bins=15,
-                color="steelblue",
+                color=st.session_state.hist_color,
                 edgecolor="black",
                 linewidth=0.8
             )
