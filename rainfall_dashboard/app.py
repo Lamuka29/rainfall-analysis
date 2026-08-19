@@ -124,7 +124,7 @@ VALID_MIN = 0.0
 
 WET_DAY_MIN = st.sidebar.number_input(
     "Wet day threshold (mm)",
-    min_value=0.0,
+    min_value=0.1,
     value=0.01,
     step=0.01
 )
