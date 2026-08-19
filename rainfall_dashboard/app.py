@@ -2859,10 +2859,227 @@ for result in successful_results:
 
     # ========================================================
     # TAB 10
+    # BOXPLOT
+    # ========================================================
+    
+    with tabs[9]:
+    
+        st.subheader(
+            f"Daily Rainfall Distribution by Month - "
+            f"{target_year}"
+        )
+    
+        # ----------------------------------------------------
+        # Collect daily rainfall ≥ 0.1 mm for each month
+        # ----------------------------------------------------
+    
+        boxplot_data = []
+    
+        boxplot_labels = []
+    
+        for month in months:
+    
+            month_index = (
+                months.index(month) + 1
+            )
+    
+            days_expected = calendar.monthrange(
+                target_year,
+                month_index
+            )[1]
+    
+            raw_values = target_data[
+                month
+            ].iloc[:days_expected].copy()
+    
+            values = raw_values[
+                raw_values.notna() &
+                (raw_values >= WET_DAY_MIN)
+            ]
+    
+            boxplot_data.append(
+                values.tolist()
+            )
+    
+            boxplot_labels.append(
+                month
+            )
+    
+        # ----------------------------------------------------
+        # Check whether data exists
+        # ----------------------------------------------------
+    
+        if any(
+            len(values) > 0
+            for values in boxplot_data
+        ):
+    
+            fig, ax = plt.subplots(
+                figsize=(14, 8)
+            )
+    
+            bg_color = BG_COLOR
+    
+            fig.patch.set_facecolor(
+                bg_color
+            )
+    
+            ax.set_facecolor(
+                bg_color
+            )
+    
+            # ------------------------------------------------
+            # Boxplot
+            # ------------------------------------------------
+    
+            bp = ax.boxplot(
+                boxplot_data,
+                labels=boxplot_labels,
+                patch_artist=True,
+                showmeans=True,
+                meanline=False,
+                showfliers=True
+            )
+    
+            # ------------------------------------------------
+            # Box colour
+            # ------------------------------------------------
+    
+            for box in bp["boxes"]:
+    
+                box.set(
+                    facecolor="#87CEEB",
+                    edgecolor="black",
+                    linewidth=1
+                )
+    
+            # ------------------------------------------------
+            # Median
+            # ------------------------------------------------
+    
+            for median in bp["medians"]:
+    
+                median.set(
+                    color="red",
+                    linewidth=2
+                )
+    
+            # ------------------------------------------------
+            # Mean
+            # ------------------------------------------------
+    
+            for mean in bp["means"]:
+    
+                mean.set(
+                    marker="o",
+                    markerfacecolor="black",
+                    markeredgecolor="black",
+                    markersize=5
+                )
+    
+            # ------------------------------------------------
+            # Whisker
+            # ------------------------------------------------
+    
+            for whisker in bp["whiskers"]:
+    
+                whisker.set(
+                    color="black",
+                    linewidth=1
+                )
+    
+            # ------------------------------------------------
+            # Caps
+            # ------------------------------------------------
+    
+            for cap in bp["caps"]:
+    
+                cap.set(
+                    color="black",
+                    linewidth=1
+                )
+    
+            # ------------------------------------------------
+            # Outliers
+            # ------------------------------------------------
+    
+            for flier in bp["fliers"]:
+    
+                flier.set(
+                    marker="o",
+                    markerfacecolor="orange",
+                    markeredgecolor="black",
+                    markersize=5,
+                    alpha=0.7
+                )
+    
+            # ------------------------------------------------
+            # Title
+            # ------------------------------------------------
+    
+            ax.set_title(
+                f"{file_name}\n"
+                f"Daily Rainfall Distribution by Month - "
+                f"{target_year}",
+                fontsize=16,
+                fontweight="bold"
+            )
+    
+            ax.set_xlabel(
+                "Month",
+                fontsize=12
+            )
+    
+            ax.set_ylabel(
+                "Daily Rainfall (mm)",
+                fontsize=12
+            )
+    
+            ax.grid(
+                True,
+                axis="y",
+                linestyle="--",
+                alpha=0.4
+            )
+    
+            plt.tight_layout()
+    
+            st.pyplot(
+                fig,
+                use_container_width=True
+            )
+    
+            plt.close(fig)
+    
+            # ------------------------------------------------
+            # Explanation
+            # ------------------------------------------------
+    
+            st.info(
+                """
+                **Cara membaca Boxplot:**
+    
+                - Garis dalam kotak = Median
+                - Titik hitam = Mean
+                - Kotak = 50% data tengah (Q1–Q3)
+                - Whisker = julat data utama
+                - Titik di luar whisker = Outlier
+                """
+            )
+    
+        else:
+    
+            st.warning(
+                f"Tiada data hujan ≥ "
+                f"{WET_DAY_MIN:.1f} mm untuk boxplot."
+            )
+        
+    # ========================================================
+    # TAB 11
     # QUALITY CONTROL
     # ========================================================
 
-    with tabs[9]:
+    with tabs[10]:
 
         st.subheader(
             "⚠️ Quality Control"
