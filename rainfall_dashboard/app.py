@@ -1832,6 +1832,7 @@ for result in successful_results:
         "📐 Standard Deviation",
         "📊 Histogram",
         "🥧 Rainfall Category",
+        "📦 Boxplot",
         "⚠️ QC"
     ])
 
