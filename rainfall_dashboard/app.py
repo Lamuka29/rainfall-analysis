@@ -126,7 +126,7 @@ WET_DAY_MIN = st.sidebar.number_input(
     "Wet day threshold (mm)",
     min_value=0.0,
     value=0.1,
-    step=0.1
+    step=0.01
 )
 
 SUSPECT_RAINFALL = st.sidebar.number_input(
