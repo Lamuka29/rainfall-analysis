@@ -3077,7 +3077,7 @@ for result in successful_results:
                 use_container_width=True
             )
     
-            plt.close(fig)
+         #   plt.close(fig)
     
             # ------------------------------------------------
             # Explanation
