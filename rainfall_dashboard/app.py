@@ -378,7 +378,7 @@ BACKGROUND_COLORS = {
 # ============================================================
 
 uploaded_files = st.file_uploader(
-    "📁 Upload Excel file",
+    "📁 Upload Excel file untuk stesen AAWS",
     type=["xlsx", "xls"],
     accept_multiple_files=True
 )
