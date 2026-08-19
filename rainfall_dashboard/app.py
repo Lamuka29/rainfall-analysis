@@ -124,7 +124,7 @@ VALID_MIN = 0.0
 
 WET_DAY_MIN = st.sidebar.number_input(
     "Wet day threshold (mm)",
-    min_value=0.1,
+    min_value=0.0,
     value=0.01,
     step=0.01
 )
@@ -2508,7 +2508,7 @@ for result in successful_results:
 
         st.subheader(
             f"Number of Wet Days "
-            f"(≥{WET_DAY_MIN:.1f} mm) - "
+            f"(≥0.1 mm) - "
             f"{target_year}"
         )
 
@@ -2559,7 +2559,7 @@ for result in successful_results:
         ax.set_title(
             f"{file_name}\n"
             f"Number of Wet Days "
-            f"(≥{WET_DAY_MIN:.1f} mm) - "
+            f"(≥0.1 mm) - "
             f"{target_year}",
             fontsize=16,
             fontweight="bold"
@@ -2761,7 +2761,7 @@ for result in successful_results:
 
             st.warning(
                 f"Tiada data hujan ≥ "
-                f"{WET_DAY_MIN:.1f} mm untuk histogram."
+                f"0.1 mm untuk histogram."
             )
 
     # ========================================================
@@ -3080,7 +3080,7 @@ for result in successful_results:
     
             st.warning(
                 f"Tiada data hujan ≥ "
-                f"{WET_DAY_MIN:.1f} mm untuk boxplot."
+                f"0.1 mm untuk boxplot."
             )
         
     # ========================================================
@@ -3099,7 +3099,7 @@ for result in successful_results:
             **QC Rules**
 
             - `0.0 mm` = data sah
-            - `≥ {WET_DAY_MIN:.1f} mm` = wet day
+            - `≥ 0.1 mm` = wet day
             - `> {SUSPECT_RAINFALL:.0f} mm` = suspect
             - `> {EXTREME_RAINFALL:.0f} mm` = extreme
             - Negative rainfall = invalid / dibuang
