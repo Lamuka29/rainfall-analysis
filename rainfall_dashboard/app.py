@@ -444,10 +444,22 @@ def read_year_sheet(uploaded_file, year):
 
         file_bytes = uploaded_file.getvalue()
 
+        file_ext = os.path.splitext(
+            uploaded_file.name
+        )[1].lower()
+        
+        if file_ext == ".xls":
+            engine = "xlrd"
+        elif file_ext == ".xlsx":
+            engine = "openpyxl"
+        else:
+            return None, "Format fail tidak disokong."
+
         df = pd.read_excel(
             io.BytesIO(file_bytes),
             sheet_name=str(year),
-            header=6
+            header=6,
+            engine=engine
         )
 
     except Exception as e:
