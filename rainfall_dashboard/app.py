@@ -2943,7 +2943,7 @@ for result in successful_results:
     
             bp = ax.boxplot(
                 boxplot_data,
-                labels=boxplot_labels,
+                tick_labels=boxplot_labels,
                 patch_artist=True,
                 showmeans=True,
                 meanline=False,
