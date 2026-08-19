@@ -1160,16 +1160,21 @@ def analyze_file(uploaded_file):
     )
 
     light_rain = sum(
-        0.1 <= value <= 10.0
+        0.1 <= value <= 2.5
         for value in pie_values
     )
 
     moderate_rain = sum(
-        10.0 < value <= 50.0
+        2.5 < value <= 10.0
         for value in pie_values
     )
 
     heavy_rain = sum(
+        10.0 < value <= 50.0
+        for value in pie_values
+    )
+    
+    extreme_rain = sum(
         value > 50.0
         for value in pie_values
     )
@@ -1178,14 +1183,16 @@ def analyze_file(uploaded_file):
         no_rain,
         light_rain,
         moderate_rain,
-        heavy_rain
+        heavy_rain,
+        extreme_rain
     ]
 
     category_labels = [
         "No Rain (0.0 mm)",
-        "Light Rain (0.1–10 mm)",
-        "Moderate Rain (>10–50 mm)",
-        "Heavy Rain (>50 mm)"
+        "Light Rain (0.1–2.5 mm)",
+        "Moderate Rain (>2.5–10.0 mm)",
+        "Heavy Rain (>10.0-50.0 mm)",
+        "Extreme Rain (>50 mm)"
     ]
 
     # ========================================================
