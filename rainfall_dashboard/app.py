@@ -4288,7 +4288,8 @@ with main_tabs[3]:
                 file2_raw = pd.read_excel(
                     file2,
                     sheet_name=station,
-                    header=5
+                    header=5,
+                    usecols="B:O"
                 )
 
                 # Remove completely empty columns
