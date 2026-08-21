@@ -4376,402 +4376,402 @@ with main_tabs[3]:
                     key="tab4_target_year"
                 )
 
-                    # =================================================
-                    # FILE 1 - CALCULATE MONTHLY TOTAL FOR EACH YEAR
-                    # =================================================
+                # =================================================
+                # FILE 1 - CALCULATE MONTHLY TOTAL FOR EACH YEAR
+                # =================================================
 
-                    file1_yearly_monthly = {}
+                file1_yearly_monthly = {}
 
-                    for year in analysis_years:
+                for year in analysis_years:
 
-                        try:
+                    try:
 
-                            daily = pd.read_excel(
-                                file1,
-                                sheet_name=str(year),
-                                header=6
-                            )
+                        daily = pd.read_excel(
+                            file1,
+                            sheet_name=str(year),
+                            header=6
+                        )
 
-                            # -----------------------------------------
-                            # CLEAN COLUMN NAMES
-                            # -----------------------------------------
+                        # -----------------------------------------
+                        # CLEAN COLUMN NAMES
+                        # -----------------------------------------
 
-                            daily.columns = [
-                                str(col).strip().upper()
-                                for col in daily.columns
+                        daily.columns = [
+                            str(col).strip().upper()
+                            for col in daily.columns
+                        ]
+
+                        # -----------------------------------------
+                        # RENAME FIRST COLUMN TO HARI
+                        # -----------------------------------------
+
+                        if len(daily.columns) >= 13:
+
+                            daily = daily.iloc[
+                                :,
+                                :13
                             ]
 
-                            # -----------------------------------------
-                            # RENAME FIRST COLUMN TO HARI
-                            # -----------------------------------------
+                            daily.columns = [
+                                "HARI"
+                            ] + months
 
-                            if len(daily.columns) >= 13:
+                        # -----------------------------------------
+                        # CONVERT MONTH DATA
+                        # -----------------------------------------
 
-                                daily = daily.iloc[
-                                    :,
-                                    :13
-                                ]
+                        for month in months:
 
-                                daily.columns = [
-                                    "HARI"
-                                ] + months
+                            if month in daily.columns:
 
-                            # -----------------------------------------
-                            # CONVERT MONTH DATA
-                            # -----------------------------------------
-
-                            for month in months:
-
-                                if month in daily.columns:
-
-                                    daily[month] = pd.to_numeric(
-                                        daily[month],
-                                        errors="coerce"
-                                    )
-
-                                else:
-
-                                    daily[month] = np.nan
-
-                            # -----------------------------------------
-                            # MONTHLY TOTAL
-                            # -----------------------------------------
-
-                            monthly_total = (
-                                daily[months]
-                                .sum(
-                                    axis=0,
-                                    skipna=True
+                                daily[month] = pd.to_numeric(
+                                    daily[month],
+                                    errors="coerce"
                                 )
-                                .reindex(months)
+
+                            else:
+
+                                daily[month] = np.nan
+
+                        # -----------------------------------------
+                        # MONTHLY TOTAL
+                        # -----------------------------------------
+
+                        monthly_total = (
+                            daily[months]
+                            .sum(
+                                axis=0,
+                                skipna=True
                             )
-
-                            file1_yearly_monthly[year] = (
-                                monthly_total
-                            )
-
-                        except Exception:
-
-                            file1_yearly_monthly[year] = (
-                                pd.Series(
-                                    np.nan,
-                                    index=months
-                                )
-                            )
-
-                    # =================================================
-                    # FILE 1 MEAN
-                    # =================================================
-
-                    file1_yearly_table = pd.DataFrame(
-                        file1_yearly_monthly
-                    ).T
-
-                    file1_mean = (
-                        file1_yearly_table
-                        .reindex(columns=months)
-                        .mean(
-                            axis=0,
-                            skipna=True
-                        )
-                        .reindex(months)
-                    )
-
-                    # =================================================
-                    # FILE 2 MEAN
-                    # =================================================
-
-                    file2_analysis = (
-                        file2_data[
-                            file2_data["YEAR"].isin(
-                                analysis_years
-                            )
-                        ]
-                        .copy()
-                    )
-
-                    file2_mean = (
-                        file2_analysis[months]
-                        .mean(
-                            axis=0,
-                            skipna=True
-                        )
-                        .reindex(months)
-                    )
-
-                    # =================================================
-                    # FILE 1 TARGET YEAR
-                    # =================================================
-
-                    file1_target = (
-                        file1_yearly_monthly[
-                            target_year
-                        ]
-                        .reindex(months)
-                    )
-
-                    # =================================================
-                    # FILE 2 TARGET YEAR
-                    # =================================================
-
-                    target_row = (
-                        file2_data[
-                            file2_data["YEAR"]
-                            == target_year
-                        ]
-                    )
-
-                    if len(target_row) > 0:
-
-                        file2_target = (
-                            target_row.iloc[0][months]
                             .reindex(months)
                         )
 
-                    else:
-
-                        file2_target = pd.Series(
-                            np.nan,
-                            index=months
+                        file1_yearly_monthly[year] = (
+                            monthly_total
                         )
 
-                    # =================================================
-                    # SUMMARY
-                    # =================================================
+                    except Exception:
 
-                    st.success(
-                        f"📍 {station} | "
-                        f"Years: {analysis_years[0]}–"
-                        f"{analysis_years[-1]} | "
-                        f"Target Year: {target_year}"
+                        file1_yearly_monthly[year] = (
+                            pd.Series(
+                                np.nan,
+                                index=months
+                            )
+                        )
+
+                # =================================================
+                # FILE 1 MEAN
+                # =================================================
+
+                file1_yearly_table = pd.DataFrame(
+                    file1_yearly_monthly
+                ).T
+
+                file1_mean = (
+                    file1_yearly_table
+                    .reindex(columns=months)
+                    .mean(
+                        axis=0,
+                        skipna=True
+                    )
+                    .reindex(months)
+                )
+
+                # =================================================
+                # FILE 2 MEAN
+                # =================================================
+
+                file2_analysis = (
+                    file2_data[
+                        file2_data["YEAR"].isin(
+                            analysis_years
+                        )
+                    ]
+                    .copy()
+                )
+
+                file2_mean = (
+                    file2_analysis[months]
+                    .mean(
+                        axis=0,
+                        skipna=True
+                    )
+                    .reindex(months)
+                )
+
+                # =================================================
+                # FILE 1 TARGET YEAR
+                # =================================================
+
+                file1_target = (
+                    file1_yearly_monthly[
+                        target_year
+                    ]
+                    .reindex(months)
+                )
+
+                # =================================================
+                # FILE 2 TARGET YEAR
+                # =================================================
+
+                target_row = (
+                    file2_data[
+                        file2_data["YEAR"]
+                        == target_year
+                    ]
+                )
+
+                if len(target_row) > 0:
+
+                    file2_target = (
+                        target_row.iloc[0][months]
+                        .reindex(months)
                     )
 
-                    # =================================================
-                    # MAIN GRAPH
-                    # =================================================
+                else:
 
-                    st.subheader(
-                        f"📊 {station} - Monthly Rainfall Comparison"
+                    file2_target = pd.Series(
+                        np.nan,
+                        index=months
                     )
 
-                    fig, ax = plt.subplots(
-                        figsize=(15, 8)
+                # =================================================
+                # SUMMARY
+                # =================================================
+
+                st.success(
+                    f"📍 {station} | "
+                    f"Years: {analysis_years[0]}–"
+                    f"{analysis_years[-1]} | "
+                    f"Target Year: {target_year}"
+                )
+
+                # =================================================
+                # MAIN GRAPH
+                # =================================================
+
+                st.subheader(
+                    f"📊 {station} - Monthly Rainfall Comparison"
+                )
+
+                fig, ax = plt.subplots(
+                    figsize=(15, 8)
+                )
+
+                fig.patch.set_facecolor(
+                    BG_COLOR
+                )
+
+                ax.set_facecolor(
+                    BG_COLOR
+                )
+
+                x = np.arange(
+                    len(months)
+                )
+
+                # ------------------------------------------------
+                # BAR POSITION
+                # ------------------------------------------------
+
+                bar_width = 0.30
+
+                bar1 = ax.bar(
+                    x - bar_width / 2,
+                    file1_mean.values,
+                    width=bar_width,
+                    color="steelblue",
+                    edgecolor="black",
+                    linewidth=0.8,
+                    label=(
+                        f"{station} – File 1 Mean"
                     )
+                )
 
-                    fig.patch.set_facecolor(
-                        BG_COLOR
+                bar2 = ax.bar(
+                    x + bar_width / 2,
+                    file2_mean.values,
+                    width=bar_width,
+                    color="darkorange",
+                    edgecolor="black",
+                    linewidth=0.8,
+                    label=(
+                        f"{station} – File 2 Mean"
                     )
+                )
 
-                    ax.set_facecolor(
-                        BG_COLOR
+                # ------------------------------------------------
+                # LINE 1 - FILE 1 TARGET
+                # ------------------------------------------------
+
+                line1, = ax.plot(
+                    x,
+                    file1_target.values,
+                    color="navy",
+                    marker="o",
+                    linewidth=2.5,
+                    markersize=7,
+                    label=(
+                        f"{station} – File 1 "
+                        f"{target_year}"
                     )
+                )
 
-                    x = np.arange(
-                        len(months)
+                # ------------------------------------------------
+                # LINE 2 - FILE 2 TARGET
+                # ------------------------------------------------
+
+                line2, = ax.plot(
+                    x,
+                    file2_target.values,
+                    color="crimson",
+                    marker="o",
+                    linewidth=2.5,
+                    markersize=7,
+                    label=(
+                        f"{station} – File 2 "
+                        f"{target_year}"
                     )
+                )
 
-                    # ------------------------------------------------
-                    # BAR POSITION
-                    # ------------------------------------------------
+                # =================================================
+                # VALUE LABEL - BARS
+                # =================================================
 
-                    bar_width = 0.30
+                for bars in [
+                    bar1,
+                    bar2
+                ]:
 
-                    bar1 = ax.bar(
-                        x - bar_width / 2,
+                    for bar in bars:
+
+                        value = bar.get_height()
+
+                        if pd.notna(value):
+
+                            ax.annotate(
+                                f"{value:.1f}",
+                                (
+                                    bar.get_x()
+                                    + bar.get_width() / 2,
+                                    value
+                                ),
+                                xytext=(0, 5),
+                                textcoords="offset points",
+                                ha="center",
+                                va="bottom",
+                                fontsize=8
+                            )
+
+                # =================================================
+                # VALUE LABEL - LINES
+                # =================================================
+
+                for values in [
+                    file1_target.values,
+                    file2_target.values
+                ]:
+
+                    for i, value in enumerate(
+                        values
+                    ):
+
+                        if pd.notna(value):
+
+                            ax.annotate(
+                                f"{value:.1f}",
+                                (
+                                    x[i],
+                                    value
+                                ),
+                                xytext=(0, -15),
+                                textcoords="offset points",
+                                ha="center",
+                                fontsize=8
+                            )
+
+                # =================================================
+                # GRAPH SETTINGS
+                # =================================================
+
+                ax.set_title(
+                    f"{station}\n"
+                    f"Mean Monthly Rainfall vs "
+                    f"Target Year {target_year}",
+                    fontsize=16,
+                    fontweight="bold"
+                )
+
+                ax.set_xlabel(
+                    "Month",
+                    fontsize=12
+                )
+
+                ax.set_ylabel(
+                    "Rainfall (mm)",
+                    fontsize=12
+                )
+
+                ax.set_xticks(x)
+
+                ax.set_xticklabels(
+                    months
+                )
+
+                ax.grid(
+                    True,
+                    axis="y",
+                    linestyle="--",
+                    alpha=0.4
+                )
+
+                ax.legend(
+                    bbox_to_anchor=(1.02, 1),
+                    loc="upper left",
+                    fontsize=9
+                )
+
+                plt.tight_layout()
+
+                st.pyplot(
+                    fig,
+                    use_container_width=True
+                )
+
+                plt.close(fig)
+
+                # =================================================
+                # DATA TABLE
+                # =================================================
+
+                comparison_table = pd.DataFrame({
+
+                    "Month":
+                        months,
+
+                    "File 1 Mean (mm)":
                         file1_mean.values,
-                        width=bar_width,
-                        color="steelblue",
-                        edgecolor="black",
-                        linewidth=0.8,
-                        label=(
-                            f"{station} – File 1 Mean"
-                        )
-                    )
 
-                    bar2 = ax.bar(
-                        x + bar_width / 2,
+                    f"File 1 {target_year} (mm)":
+                        file1_target.values,
+
+                    "File 2 Mean (mm)":
                         file2_mean.values,
-                        width=bar_width,
-                        color="darkorange",
-                        edgecolor="black",
-                        linewidth=0.8,
-                        label=(
-                            f"{station} – File 2 Mean"
-                        )
-                    )
 
-                    # ------------------------------------------------
-                    # LINE 1 - FILE 1 TARGET
-                    # ------------------------------------------------
-
-                    line1, = ax.plot(
-                        x,
-                        file1_target.values,
-                        color="navy",
-                        marker="o",
-                        linewidth=2.5,
-                        markersize=7,
-                        label=(
-                            f"{station} – File 1 "
-                            f"{target_year}"
-                        )
-                    )
-
-                    # ------------------------------------------------
-                    # LINE 2 - FILE 2 TARGET
-                    # ------------------------------------------------
-
-                    line2, = ax.plot(
-                        x,
-                        file2_target.values,
-                        color="crimson",
-                        marker="o",
-                        linewidth=2.5,
-                        markersize=7,
-                        label=(
-                            f"{station} – File 2 "
-                            f"{target_year}"
-                        )
-                    )
-
-                    # =================================================
-                    # VALUE LABEL - BARS
-                    # =================================================
-
-                    for bars in [
-                        bar1,
-                        bar2
-                    ]:
-
-                        for bar in bars:
-
-                            value = bar.get_height()
-
-                            if pd.notna(value):
-
-                                ax.annotate(
-                                    f"{value:.1f}",
-                                    (
-                                        bar.get_x()
-                                        + bar.get_width() / 2,
-                                        value
-                                    ),
-                                    xytext=(0, 5),
-                                    textcoords="offset points",
-                                    ha="center",
-                                    va="bottom",
-                                    fontsize=8
-                                )
-
-                    # =================================================
-                    # VALUE LABEL - LINES
-                    # =================================================
-
-                    for values in [
-                        file1_target.values,
+                    f"File 2 {target_year} (mm)":
                         file2_target.values
-                    ]:
 
-                        for i, value in enumerate(
-                            values
-                        ):
+                })
 
-                            if pd.notna(value):
+                st.subheader(
+                    "📋 Monthly Comparison"
+                )
 
-                                ax.annotate(
-                                    f"{value:.1f}",
-                                    (
-                                        x[i],
-                                        value
-                                    ),
-                                    xytext=(0, -15),
-                                    textcoords="offset points",
-                                    ha="center",
-                                    fontsize=8
-                                )
-
-                    # =================================================
-                    # GRAPH SETTINGS
-                    # =================================================
-
-                    ax.set_title(
-                        f"{station}\n"
-                        f"Mean Monthly Rainfall vs "
-                        f"Target Year {target_year}",
-                        fontsize=16,
-                        fontweight="bold"
-                    )
-
-                    ax.set_xlabel(
-                        "Month",
-                        fontsize=12
-                    )
-
-                    ax.set_ylabel(
-                        "Rainfall (mm)",
-                        fontsize=12
-                    )
-
-                    ax.set_xticks(x)
-
-                    ax.set_xticklabels(
-                        months
-                    )
-
-                    ax.grid(
-                        True,
-                        axis="y",
-                        linestyle="--",
-                        alpha=0.4
-                    )
-
-                    ax.legend(
-                        bbox_to_anchor=(1.02, 1),
-                        loc="upper left",
-                        fontsize=9
-                    )
-
-                    plt.tight_layout()
-
-                    st.pyplot(
-                        fig,
-                        use_container_width=True
-                    )
-
-                    plt.close(fig)
-
-                    # =================================================
-                    # DATA TABLE
-                    # =================================================
-
-                    comparison_table = pd.DataFrame({
-
-                        "Month":
-                            months,
-
-                        "File 1 Mean (mm)":
-                            file1_mean.values,
-
-                        f"File 1 {target_year} (mm)":
-                            file1_target.values,
-
-                        "File 2 Mean (mm)":
-                            file2_mean.values,
-
-                        f"File 2 {target_year} (mm)":
-                            file2_target.values
-
-                    })
-
-                    st.subheader(
-                        "📋 Monthly Comparison"
-                    )
-
-                    st.dataframe(
-                        comparison_table.round(2),
-                        use_container_width=True,
-                        hide_index=True
-                    )
+                st.dataframe(
+                    comparison_table.round(2),
+                    use_container_width=True,
+                    hide_index=True
+                )
 # ============================================================
 # FOOTER
 # ============================================================
