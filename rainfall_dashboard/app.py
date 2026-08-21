@@ -4279,91 +4279,64 @@ with main_tabs[3]:
                 key="tab4_station"
             )
 
-            # ----------------------------------------------
-            # READ FILE 2 TABLE
-            # ----------------------------------------------
-
-            try:
-
+                # =================================================
+                # READ FILE 2
+                # HEADER SEBENAR:
+                # B = YEAR
+                # C:N = JAN:DEC
+                # O = ANNUAL
+                # =================================================
+                
                 file2_raw = pd.read_excel(
                     file2,
                     sheet_name=station,
-                    header=5,
+                    header=None,
                     usecols="B:O"
                 )
-
-                # Remove completely empty columns
-                file2_raw = file2_raw.dropna(
-                    axis=1,
-                    how="all"
-                )
-
-                # Clean column names
-                file2_raw.columns = [
-                    str(col).strip().upper()
-                    for col in file2_raw.columns
+                
+                file2_data = file2_raw.iloc[6:].copy()
+                
+                file2_data.columns = [
+                    "YEAR",
+                    "JAN",
+                    "FEB",
+                    "MAR",
+                    "APR",
+                    "MAY",
+                    "JUN",
+                    "JUL",
+                    "AUG",
+                    "SEP",
+                    "OCT",
+                    "NOV",
+                    "DEC",
+                    "ANNUAL"
                 ]
-
-            except Exception as e:
-
-                st.error(
-                    f"❌ Gagal membaca data File 2: {e}"
-                )
-
-                file2_raw = pd.DataFrame()
-
-            # =================================================
-            # CHECK FILE 2 COLUMNS
-            # =================================================
-
-            required_file2_columns = [
-                "YEAR"
-            ] + months
-
-            missing_columns = [
-                col
-                for col in required_file2_columns
-                if col not in file2_raw.columns
-            ]
-
-            if missing_columns:
-
-                st.error(
-                    "❌ Header File 2 tidak sepadan.\n\n"
-                    f"Column missing: {missing_columns}"
-                )
-
-            else:
 
                 # =================================================
                 # CLEAN FILE 2
                 # =================================================
 
-                file2_data = file2_raw[
-                    required_file2_columns
-                ].copy()
-
                 file2_data["YEAR"] = pd.to_numeric(
                     file2_data["YEAR"],
                     errors="coerce"
                 )
-
+                
                 file2_data = file2_data[
                     file2_data["YEAR"].notna()
                 ].copy()
-
+                
                 file2_data["YEAR"] = (
                     file2_data["YEAR"]
                     .astype(int)
                 )
-
+                
                 for month in months:
-
+                
                     file2_data[month] = pd.to_numeric(
                         file2_data[month],
                         errors="coerce"
                     )
-
                 file2_data = (
                     file2_data
                     .drop_duplicates(
