@@ -4159,119 +4159,70 @@ with main_tabs[2]:
                 )
                 st.divider()            
 # ============================================================
-# MAIN TAB 4 - DAILY FILE vs YEARLY FILE COMPARISON
+# MAIN TAB 4
+# FILE 1 vs FILE 2 COMPARISON
 # ============================================================
 with main_tabs[3]:
 
-    st.header("🔄 Monthly Rainfall Comparison")
+    st.header(
+        "🔄 File 1 vs File 2 Comparison"
+    )
 
     st.markdown(
         """
-        Perbandingan data hujan bulanan bagi **stesen yang sama**
-        daripada dua format fail yang berbeza.
-        
-        **Bar = Mean Monthly Rainfall**  
-        **Line = Target Year Monthly Rainfall**
+        Perbandingan data hujan daripada **File 1**
+        dan **File 2** berdasarkan bulan dan tahun
+        yang sama.
         """
     )
 
     # ========================================================
-    # SELECT FILES
+    # FILE 1
+    # GUNA FILE YANG SAMA DENGAN TAB 1, 2 & 3
     # ========================================================
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        file1 = st.file_uploader(
-            "📁 File 1 - Daily Rainfall Data",
-            type=["xlsx", "xls"],
-            key="tab4_file1"
-        )
-
-    with col2:
-
-        file2 = st.file_uploader(
-            "📁 File 2 - Monthly/Yearly Rainfall Data",
-            type=["xlsx", "xls"],
-            key="tab4_file2"
-        )
+    st.success(
+        "📂 File 1: Menggunakan fail utama yang telah di-upload."
+    )
 
     # ========================================================
-    # CHECK FILES
+    # UPLOAD FILE 2
     # ========================================================
 
-    if file1 is None or file2 is None:
+    file2 = st.file_uploader(
+        "📂 Upload File 2 – Monthly Rainfall",
+        type=["xlsx", "xls"],
+        key="tab4_file2"
+    )
+
+    if file2 is None:
 
         st.info(
-            "⬆️ Sila masukkan File 1 dan File 2 "
-            "untuk membuat perbandingan."
+            "📂 Sila upload File 2 untuk memulakan "
+            "perbandingan."
         )
 
     else:
 
-        months = [
-            "JAN", "FEB", "MAR", "APR",
-            "MAY", "JUN", "JUL", "AUG",
-            "SEP", "OCT", "NOV", "DEC"
-        ]
-
         # ====================================================
-        # READ FILE 1 - DAILY DATA
+        # GET SHEETS FROM FILE 2
         # ====================================================
 
-        try:
+        file2_sheets = pd.ExcelFile(
+            file2
+        ).sheet_names
 
-            excel1 = pd.ExcelFile(file1)
-
-            file1_years = []
-
-            for sheet in excel1.sheet_names:
-
-                try:
-                    year = int(str(sheet).strip())
-
-                    if 1900 <= year <= 2100:
-                        file1_years.append(year)
-
-                except:
-                    continue
-
-            file1_years = sorted(
-                set(file1_years)
-            )
-
-        except Exception as e:
+        if not file2_sheets:
 
             st.error(
-                f"❌ Gagal membaca File 1: {e}"
+                "❌ Tiada sheet dijumpai dalam File 2."
             )
 
-            file1_years = []
+        else:
 
-        # ====================================================
-        # READ FILE 2 - YEARLY DATA
-        # ====================================================
-
-        try:
-
-            excel2 = pd.ExcelFile(file2)
-
-            file2_sheets = excel2.sheet_names
-
-        except Exception as e:
-
-            st.error(
-                f"❌ Gagal membaca File 2: {e}"
-            )
-
-            file2_sheets = []
-
-        # ====================================================
-        # SELECT STATION / SHEET FILE 2
-        # ====================================================
-
-        if file1_years and file2_sheets:
+            # =================================================
+            # SELECT STATION / SHEET
+            # =================================================
 
             station = st.selectbox(
                 "📍 Select Station",
@@ -4281,21 +4232,27 @@ with main_tabs[3]:
 
             # =================================================
             # READ FILE 2
-            # HEADER SEBENAR:
-            # B = YEAR
-            # C:N = JAN:DEC
-            # O = ANNUAL
+            #
+            # B5 = Year
+            # C6:N6 = JAN:DEC
+            # O = Annual
+            #
+            # Data bermula row 7
             # =================================================
-            
+
             file2_raw = pd.read_excel(
                 file2,
                 sheet_name=station,
                 header=None,
                 usecols="B:O"
             )
-            
-            file2_data = file2_raw.iloc[6:].copy()
-            
+
+            file2_data = (
+                file2_raw
+                .iloc[6:]
+                .copy()
+            )
+
             file2_data.columns = [
                 "YEAR",
                 "JAN",
@@ -4321,22 +4278,23 @@ with main_tabs[3]:
                 file2_data["YEAR"],
                 errors="coerce"
             )
-            
+
             file2_data = file2_data[
                 file2_data["YEAR"].notna()
             ].copy()
-            
+
             file2_data["YEAR"] = (
                 file2_data["YEAR"]
                 .astype(int)
             )
-            
+
             for month in months:
-            
+
                 file2_data[month] = pd.to_numeric(
                     file2_data[month],
                     errors="coerce"
                 )
+
             file2_data = (
                 file2_data
                 .drop_duplicates(
@@ -4347,215 +4305,145 @@ with main_tabs[3]:
             )
 
             # =================================================
-            # YEARS USED FOR ANALYSIS
-            # USE YEARS AVAILABLE IN FILE 2
+            # FILE 1 - GET YEARLY MONTHLY TOTAL
             # =================================================
 
-            analysis_years = sorted(
-                set(file2_data["YEAR"])
-                .intersection(file1_years)
+            file1_yearly = (
+                yearly_result[
+                    "yearly_monthly_total"
+                ]
+                .reindex(columns=months)
+                .copy()
             )
 
-            if not analysis_years:
+            file1_yearly.index = (
+                pd.to_numeric(
+                    file1_yearly.index,
+                    errors="coerce"
+                )
+            )
+
+            file1_yearly = file1_yearly[
+                file1_yearly.index.notna()
+            ].copy()
+
+            file1_yearly.index = (
+                file1_yearly.index
+                .astype(int)
+            )
+
+            # =================================================
+            # COMMON YEARS
+            # =================================================
+
+            common_years = sorted(
+                set(file1_yearly.index)
+                .intersection(
+                    file2_data["YEAR"]
+                )
+            )
+
+            if not common_years:
 
                 st.error(
-                    "❌ Tiada tahun yang sama antara "
-                    "File 1 dan File 2."
+                    "❌ Tiada tahun yang sama "
+                    "antara File 1 dan File 2."
                 )
 
             else:
 
-                # =================================================
-                # TARGET YEAR
-                # =================================================
-
-                target_year = st.selectbox(
-                    "🎯 Target Year",
-                    analysis_years,
-                    index=len(analysis_years) - 1,
-                    key="tab4_target_year"
+                st.success(
+                    f"✅ Tahun yang sama: "
+                    f"{common_years[0]}–"
+                    f"{common_years[-1]}"
                 )
 
                 # =================================================
-                # FILE 1 - CALCULATE MONTHLY TOTAL FOR EACH YEAR
+                # FILTER COMMON YEARS
                 # =================================================
 
-                file1_yearly_monthly = {}
-
-                for year in analysis_years:
-
-                    try:
-
-                        daily = pd.read_excel(
-                            file1,
-                            sheet_name=str(year),
-                            header=6
-                        )
-
-                        # -----------------------------------------
-                        # CLEAN COLUMN NAMES
-                        # -----------------------------------------
-
-                        daily.columns = [
-                            str(col).strip().upper()
-                            for col in daily.columns
-                        ]
-
-                        # -----------------------------------------
-                        # RENAME FIRST COLUMN TO HARI
-                        # -----------------------------------------
-
-                        if len(daily.columns) >= 13:
-
-                            daily = daily.iloc[
-                                :,
-                                :13
-                            ]
-
-                            daily.columns = [
-                                "HARI"
-                            ] + months
-
-                        # -----------------------------------------
-                        # CONVERT MONTH DATA
-                        # -----------------------------------------
-
-                        for month in months:
-
-                            if month in daily.columns:
-
-                                daily[month] = pd.to_numeric(
-                                    daily[month],
-                                    errors="coerce"
-                                )
-
-                            else:
-
-                                daily[month] = np.nan
-
-                        # -----------------------------------------
-                        # MONTHLY TOTAL
-                        # -----------------------------------------
-
-                        monthly_total = (
-                            daily[months]
-                            .sum(
-                                axis=0,
-                                skipna=True
-                            )
-                            .reindex(months)
-                        )
-
-                        file1_yearly_monthly[year] = (
-                            monthly_total
-                        )
-
-                    except Exception:
-
-                        file1_yearly_monthly[year] = (
-                            pd.Series(
-                                np.nan,
-                                index=months
-                            )
-                        )
-
-                # =================================================
-                # FILE 1 MEAN
-                # =================================================
-
-                file1_yearly_table = pd.DataFrame(
-                    file1_yearly_monthly
-                ).T
-
-                file1_mean = (
-                    file1_yearly_table
-                    .reindex(columns=months)
-                    .mean(
-                        axis=0,
-                        skipna=True
-                    )
-                    .reindex(months)
+                file1_compare = (
+                    file1_yearly
+                    .loc[common_years]
                 )
 
-                # =================================================
-                # FILE 2 MEAN
-                # =================================================
-
-                file2_analysis = (
-                    file2_data[
-                        file2_data["YEAR"].isin(
-                            analysis_years
-                        )
-                    ]
-                    .copy()
-                )
-
-                file2_mean = (
-                    file2_analysis[months]
-                    .mean(
-                        axis=0,
-                        skipna=True
-                    )
-                    .reindex(months)
-                )
-
-                # =================================================
-                # FILE 1 TARGET YEAR
-                # =================================================
-
-                file1_target = (
-                    file1_yearly_monthly[
-                        target_year
-                    ]
-                    .reindex(months)
-                )
-
-                # =================================================
-                # FILE 2 TARGET YEAR
-                # =================================================
-
-                target_row = (
+                file2_compare = (
                     file2_data[
                         file2_data["YEAR"]
-                        == target_year
+                        .isin(common_years)
                     ]
-                )
-
-                if len(target_row) > 0:
-
-                    file2_target = (
-                        target_row.iloc[0][months]
-                        .reindex(months)
-                    )
-
-                else:
-
-                    file2_target = pd.Series(
-                        np.nan,
-                        index=months
-                    )
-
-                # =================================================
-                # SUMMARY
-                # =================================================
-
-                st.success(
-                    f"📍 {station} | "
-                    f"Years: {analysis_years[0]}–"
-                    f"{analysis_years[-1]} | "
-                    f"Target Year: {target_year}"
+                    .set_index("YEAR")
+                    .reindex(common_years)
                 )
 
                 # =================================================
-                # MAIN GRAPH
+                # MONTHLY TOTAL
+                # FILE 1
+                # =================================================
+
+                file1_monthly_total = (
+                    file1_compare
+                    .sum(
+                        axis=0,
+                        skipna=True
+                    )
+                    .reindex(months)
+                )
+
+                # =================================================
+                # MONTHLY MEAN
+                # FILE 1
+                # =================================================
+
+                file1_monthly_mean = (
+                    file1_compare
+                    .mean(
+                        axis=0,
+                        skipna=True
+                    )
+                    .reindex(months)
+                )
+
+                # =================================================
+                # MONTHLY TOTAL
+                # FILE 2
+                # =================================================
+
+                file2_monthly_total = (
+                    file2_compare[months]
+                    .sum(
+                        axis=0,
+                        skipna=True
+                    )
+                    .reindex(months)
+                )
+
+                # =================================================
+                # MONTHLY MEAN
+                # FILE 2
+                # =================================================
+
+                file2_monthly_mean = (
+                    file2_compare[months]
+                    .mean(
+                        axis=0,
+                        skipna=True
+                    )
+                    .reindex(months)
+                )
+
+                # =================================================
+                # GRAPH
+                # 2 BAR + 2 LINE
                 # =================================================
 
                 st.subheader(
-                    f"📊 {station} - Monthly Rainfall Comparison"
+                    f"📊 Monthly Rainfall Comparison – "
+                    f"{station}"
                 )
 
                 fig, ax = plt.subplots(
-                    figsize=(15, 8)
+                    figsize=(14, 8)
                 )
 
                 fig.patch.set_facecolor(
@@ -4570,78 +4458,57 @@ with main_tabs[3]:
                     len(months)
                 )
 
+                width = 0.35
+
                 # ------------------------------------------------
-                # BAR POSITION
+                # BAR
+                # File 1 Mean
+                # File 2 Mean
                 # ------------------------------------------------
 
-                bar_width = 0.30
-
-                bar1 = ax.bar(
-                    x - bar_width / 2,
-                    file1_mean.values,
-                    width=bar_width,
-                    color="steelblue",
-                    edgecolor="black",
-                    linewidth=0.8,
-                    label=(
-                        f"{station} – File 1 Mean"
-                    )
+                bars1 = ax.bar(
+                    x - width / 2,
+                    file1_monthly_mean.values,
+                    width,
+                    label="File 1 Mean"
                 )
 
-                bar2 = ax.bar(
-                    x + bar_width / 2,
-                    file2_mean.values,
-                    width=bar_width,
-                    color="darkorange",
-                    edgecolor="black",
-                    linewidth=0.8,
-                    label=(
-                        f"{station} – File 2 Mean"
-                    )
+                bars2 = ax.bar(
+                    x + width / 2,
+                    file2_monthly_mean.values,
+                    width,
+                    label="File 2 Mean"
                 )
 
                 # ------------------------------------------------
-                # LINE 1 - FILE 1 TARGET
+                # LINE
+                # File 1 Total
+                # File 2 Total
                 # ------------------------------------------------
 
                 line1, = ax.plot(
                     x,
-                    file1_target.values,
-                    color="navy",
+                    file1_monthly_total.values,
                     marker="o",
                     linewidth=2.5,
                     markersize=7,
-                    label=(
-                        f"{station} – File 1 "
-                        f"{target_year}"
-                    )
+                    label="File 1 Total"
                 )
-
-                # ------------------------------------------------
-                # LINE 2 - FILE 2 TARGET
-                # ------------------------------------------------
 
                 line2, = ax.plot(
                     x,
-                    file2_target.values,
-                    color="crimson",
+                    file2_monthly_total.values,
                     marker="o",
                     linewidth=2.5,
                     markersize=7,
-                    label=(
-                        f"{station} – File 2 "
-                        f"{target_year}"
-                    )
+                    label="File 2 Total"
                 )
 
                 # =================================================
-                # VALUE LABEL - BARS
+                # VALUE LABEL - BAR
                 # =================================================
 
-                for bars in [
-                    bar1,
-                    bar2
-                ]:
+                for bars in [bars1, bars2]:
 
                     for bar in bars:
 
@@ -4659,32 +4526,29 @@ with main_tabs[3]:
                                 xytext=(0, 5),
                                 textcoords="offset points",
                                 ha="center",
-                                va="bottom",
                                 fontsize=8
                             )
 
                 # =================================================
-                # VALUE LABEL - LINES
+                # VALUE LABEL - LINE
                 # =================================================
 
                 for values in [
-                    file1_target.values,
-                    file2_target.values
+                    file1_monthly_total.values,
+                    file2_monthly_total.values
                 ]:
 
-                    for i, value in enumerate(
-                        values
-                    ):
+                    for i, value in enumerate(values):
 
                         if pd.notna(value):
 
                             ax.annotate(
                                 f"{value:.1f}",
                                 (
-                                    x[i],
+                                    i,
                                     value
                                 ),
-                                xytext=(0, -15),
+                                xytext=(0, 8),
                                 textcoords="offset points",
                                 ha="center",
                                 fontsize=8
@@ -4696,8 +4560,9 @@ with main_tabs[3]:
 
                 ax.set_title(
                     f"{station}\n"
-                    f"Mean Monthly Rainfall vs "
-                    f"Target Year {target_year}",
+                    f"Monthly Rainfall Comparison "
+                    f"({common_years[0]}–"
+                    f"{common_years[-1]})",
                     fontsize=16,
                     fontweight="bold"
                 )
@@ -4727,8 +4592,7 @@ with main_tabs[3]:
 
                 ax.legend(
                     bbox_to_anchor=(1.02, 1),
-                    loc="upper left",
-                    fontsize=9
+                    loc="upper left"
                 )
 
                 plt.tight_layout()
@@ -4739,39 +4603,6 @@ with main_tabs[3]:
                 )
 
                 plt.close(fig)
-
-                # =================================================
-                # DATA TABLE
-                # =================================================
-
-                comparison_table = pd.DataFrame({
-
-                    "Month":
-                        months,
-
-                    "File 1 Mean (mm)":
-                        file1_mean.values,
-
-                    f"File 1 {target_year} (mm)":
-                        file1_target.values,
-
-                    "File 2 Mean (mm)":
-                        file2_mean.values,
-
-                    f"File 2 {target_year} (mm)":
-                        file2_target.values
-
-                })
-
-                st.subheader(
-                    "📋 Monthly Comparison"
-                )
-
-                st.dataframe(
-                    comparison_table.round(2),
-                    use_container_width=True,
-                    hide_index=True
-                )
 # ============================================================
 # FOOTER
 # ============================================================
