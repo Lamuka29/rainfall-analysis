@@ -4274,11 +4274,27 @@ with main_tabs[3]:
             # CLEAN FILE 2
             # =================================================
 
-            file2_data["YEAR"] = pd.to_numeric(
-                file2_data["YEAR"],
-                errors="coerce"
-            )
-
+            file2_months = [
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC"
+            ]
+            
+            for month in file2_months:
+            
+                file2_data[month] = pd.to_numeric(
+                    file2_data[month],
+                    errors="coerce"
+                )
             file2_data = file2_data[
                 file2_data["YEAR"].notna()
             ].copy()
