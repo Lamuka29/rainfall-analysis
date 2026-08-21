@@ -4279,102 +4279,102 @@ with main_tabs[3]:
                 key="tab4_station"
             )
 
-                # =================================================
-                # READ FILE 2
-                # HEADER SEBENAR:
-                # B = YEAR
-                # C:N = JAN:DEC
-                # O = ANNUAL
-                # =================================================
-                
-                file2_raw = pd.read_excel(
-                    file2,
-                    sheet_name=station,
-                    header=None,
-                    usecols="B:O"
-                )
-                
-                file2_data = file2_raw.iloc[6:].copy()
-                
-                file2_data.columns = [
-                    "YEAR",
-                    "JAN",
-                    "FEB",
-                    "MAR",
-                    "APR",
-                    "MAY",
-                    "JUN",
-                    "JUL",
-                    "AUG",
-                    "SEP",
-                    "OCT",
-                    "NOV",
-                    "DEC",
-                    "ANNUAL"
-                ]
+            # =================================================
+            # READ FILE 2
+            # HEADER SEBENAR:
+            # B = YEAR
+            # C:N = JAN:DEC
+            # O = ANNUAL
+            # =================================================
+            
+            file2_raw = pd.read_excel(
+                file2,
+                sheet_name=station,
+                header=None,
+                usecols="B:O"
+            )
+            
+            file2_data = file2_raw.iloc[6:].copy()
+            
+            file2_data.columns = [
+                "YEAR",
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC",
+                "ANNUAL"
+            ]
 
-                # =================================================
-                # CLEAN FILE 2
-                # =================================================
+            # =================================================
+            # CLEAN FILE 2
+            # =================================================
 
-                file2_data["YEAR"] = pd.to_numeric(
-                    file2_data["YEAR"],
+            file2_data["YEAR"] = pd.to_numeric(
+                file2_data["YEAR"],
+                errors="coerce"
+            )
+            
+            file2_data = file2_data[
+                file2_data["YEAR"].notna()
+            ].copy()
+            
+            file2_data["YEAR"] = (
+                file2_data["YEAR"]
+                .astype(int)
+            )
+            
+            for month in months:
+            
+                file2_data[month] = pd.to_numeric(
+                    file2_data[month],
                     errors="coerce"
                 )
-                
-                file2_data = file2_data[
-                    file2_data["YEAR"].notna()
-                ].copy()
-                
-                file2_data["YEAR"] = (
-                    file2_data["YEAR"]
-                    .astype(int)
+            file2_data = (
+                file2_data
+                .drop_duplicates(
+                    subset=["YEAR"],
+                    keep="first"
                 )
-                
-                for month in months:
-                
-                    file2_data[month] = pd.to_numeric(
-                        file2_data[month],
-                        errors="coerce"
-                    )
-                file2_data = (
-                    file2_data
-                    .drop_duplicates(
-                        subset=["YEAR"],
-                        keep="first"
-                    )
-                    .sort_values("YEAR")
+                .sort_values("YEAR")
+            )
+
+            # =================================================
+            # YEARS USED FOR ANALYSIS
+            # USE YEARS AVAILABLE IN FILE 2
+            # =================================================
+
+            analysis_years = sorted(
+                set(file2_data["YEAR"])
+                .intersection(file1_years)
+            )
+
+            if not analysis_years:
+
+                st.error(
+                    "❌ Tiada tahun yang sama antara "
+                    "File 1 dan File 2."
                 )
+
+            else:
 
                 # =================================================
-                # YEARS USED FOR ANALYSIS
-                # USE YEARS AVAILABLE IN FILE 2
+                # TARGET YEAR
                 # =================================================
 
-                analysis_years = sorted(
-                    set(file2_data["YEAR"])
-                    .intersection(file1_years)
+                target_year = st.selectbox(
+                    "🎯 Target Year",
+                    analysis_years,
+                    index=len(analysis_years) - 1,
+                    key="tab4_target_year"
                 )
-
-                if not analysis_years:
-
-                    st.error(
-                        "❌ Tiada tahun yang sama antara "
-                        "File 1 dan File 2."
-                    )
-
-                else:
-
-                    # =================================================
-                    # TARGET YEAR
-                    # =================================================
-
-                    target_year = st.selectbox(
-                        "🎯 Target Year",
-                        analysis_years,
-                        index=len(analysis_years) - 1,
-                        key="tab4_target_year"
-                    )
 
                     # =================================================
                     # FILE 1 - CALCULATE MONTHLY TOTAL FOR EACH YEAR
