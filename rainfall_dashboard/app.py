@@ -929,8 +929,6 @@ for result in successful_results:
     ]
 
     category_values = [
-        (all_values == 0).sum(),
-
         (
             (all_values >= 1) &
             (all_values <= 10)
@@ -2930,12 +2928,6 @@ with main_tabs[1]:
         # ----------------------------------------------------
     
         category_values = [
-    
-            (
-                all_daily_values == 0
-            ).sum(),
-    
-            (
                 (all_daily_values >= 1)
                 &
                 (all_daily_values <= 10)
@@ -2961,28 +2953,36 @@ with main_tabs[1]:
         total_days = sum(
             category_values
         )
-    
         # ----------------------------------------------------
         # PIE CHART
         # ----------------------------------------------------
-    
-        if total_days > 0:
-    
-            fig, ax = plt.subplots(
-                figsize=(9, 7)
-            )
-    
-            fig.patch.set_facecolor(
-                BG_COLOR
-            )
-    
-            ax.set_facecolor(
-                BG_COLOR
-            )
-    
+                
+        pie_labels = [
+            "Light Rain (1.0–10.0 mm)",
+            "Moderate Rain (>10.0–30.0 mm)",
+            "Heavy Rain (>30.0–60.0 mm)",
+            "Very Heavy Rain (>60 mm)"
+        ]
+        
+        pie_values = [
+            ((all_values >= 1) & (all_values <= 10)).sum(),
+            ((all_values > 10) & (all_values <= 30)).sum(),
+            ((all_values > 30) & (all_values <= 60)).sum(),
+            (all_values > 60).sum()
+        ]
+        
+        total_rainy_days = sum(pie_values)
+        
+        if total_rainy_days > 0:
+        
+            fig, ax = plt.subplots(figsize=(9, 7))
+        
+            fig.patch.set_facecolor(BG_COLOR)
+            ax.set_facecolor(BG_COLOR)
+        
             wedges, texts, autotexts = ax.pie(
-                category_values,
-                labels=category_labels,
+                pie_values,
+                labels=pie_labels,
                 autopct="%1.1f%%",
                 startangle=90,
                 counterclock=False,
@@ -2991,17 +2991,11 @@ with main_tabs[1]:
                     "linewidth": 0.8
                 }
             )
-    
+        
             for autotext in autotexts:
-    
-                autotext.set_fontsize(
-                    9
-                )
-    
-                autotext.set_fontweight(
-                    "bold"
-                )
-    
+                autotext.set_fontsize(9)
+                autotext.set_fontweight("bold")
+        
             ax.set_title(
                 f"{file_name}\n"
                 f"Rainfall Category Distribution "
@@ -3009,34 +3003,15 @@ with main_tabs[1]:
                 fontsize=16,
                 fontweight="bold"
             )
-    
+        
             plt.tight_layout()
-    
+        
             st.pyplot(
                 fig,
                 use_container_width=True
             )
-            img_buffer = io.BytesIO()
-            
-            fig.savefig(
-                img_buffer,
-                format="png",
-                dpi=300,
-                bbox_inches="tight"
-            )
-            
-            img_buffer.seek(0)
-            
-            st.download_button(
-                "📥 Download Heatmap PNG",
-                data=img_buffer.getvalue(),
-                file_name=f"{file_name}_heatmap_{YEAR_RANGE_TEXT}.png",
-                mime="image/png",
-                key=f"download_yearly_rainfall_category_{file_name}"
-            )
-
+        
             plt.close(fig)
-    
             # ------------------------------------------------
             # CATEGORY TABLE
             # ------------------------------------------------
@@ -4042,8 +4017,6 @@ with main_tabs[2]:
                                 wedgeprops={
                                     "edgecolor": "black",
                                     "linewidth": 0.8
-                                st.write("CATEGORY LABELS:", category_labels)
-                                st.write("CATEGORY VALUES:", category_values)
                                 }
                             )
 
