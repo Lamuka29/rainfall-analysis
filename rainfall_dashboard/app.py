@@ -920,7 +920,7 @@ for result in successful_results:
     # RAINFALL CATEGORY
     # ========================================================
     all_values = target_data[months].stack()
-    all_values = all_values[all_values.notna() &(all_values >= 1.0)]
+    all_values = all_values[all_values >= 1.0]
 
     category_values = [
         ((all_values >= 1) &(all_values <= 10)).sum(),
@@ -1624,10 +1624,10 @@ with main_tabs[0]:
                 anomaly_colors.append("lightgray")
 
             elif value >= 0:
-                anomaly_colors.append("darkorange")
+                anomaly_colors.append("blue")
 
             else:
-                anomaly_colors.append("steelblue")
+                anomaly_colors.append("orange")
 
         bars = ax.bar(x,anomaly_percent.values,width=0.60,color=anomaly_colors,edgecolor="black",linewidth=0.8)
 
@@ -2899,7 +2899,7 @@ with main_tabs[1]:
         # ----------------------------------------------------
         
         all_values = (all_daily[months].stack())
-        all_values = all_values[all_values.notna()&(all_values >= 1.0)]
+        all_values = all_values[all_values >= 1.0]
         
         # ----------------------------------------------------
         # RAINFALL CATEGORY
@@ -3203,7 +3203,7 @@ with main_tabs[2]:
             )
 
             all_values = (all_daily[months].stack())
-            all_values = all_values[all_values.notna()&(all_values >= 1.0)]
+            all_values = all_values[all_values >= 1.0]
 
             category_values = [
                 # LIGHT RAIN
