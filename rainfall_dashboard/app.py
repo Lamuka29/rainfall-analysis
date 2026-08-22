@@ -925,25 +925,13 @@ for result in successful_results:
 
     all_values = all_values[
         all_values.notna() &
-        (all_values >= VALID_MIN)
+        (all_values >= 0.1)
     ]
 
     category_values = [
-        (
-            (all_values >= 1) &
-            (all_values <= 10)
-        ).sum(),
-
-        (
-            (all_values > 10) &
-            (all_values <= 30)
-        ).sum(),
-
-        (
-            (all_values > 30) &
-            (all_values <= 60)
-        ).sum(),
-
+        ((all_values >= 1) &(all_values <= 10)).sum(),
+        ((all_values > 10) &(all_values <= 30)).sum(),
+        ((all_values > 30) &(all_values <= 60)).sum(),
         (all_values > 60).sum()
     ]
 
@@ -2948,13 +2936,10 @@ with main_tabs[1]:
         
         total_rainy_days = sum(category_values)
         
-        
         # ----------------------------------------------------
         # PIE CHART
         # ----------------------------------------------------
-        
         if total_rainy_days > 0:
-        
             fig, ax = plt.subplots(
                 figsize=(9, 7)
             )
@@ -2962,7 +2947,6 @@ with main_tabs[1]:
             fig.patch.set_facecolor(
                 BG_COLOR
             )
-        
             ax.set_facecolor(
                 BG_COLOR
             )
