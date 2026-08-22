@@ -780,7 +780,7 @@ for result in successful_results:
         "Light Rain (1.0–10.0 mm)",
         "Moderate Rain (>10.0–30.0 mm)",
         "Heavy Rain (>30.0–60.0 mm)",
-        "Extreme Rain (>60 mm)"
+        "Very Heavy Rain (>60 mm)"
     ]
 
     # ========================================================
@@ -919,14 +919,8 @@ for result in successful_results:
     # ========================================================
     # RAINFALL CATEGORY
     # ========================================================
-    all_values = target_data[
-        months
-    ].stack()
-
-    all_values = all_values[
-        all_values.notna() &
-        (all_values >= 0.1)
-    ]
+    all_values = target_data[months].stack()
+    all_values = all_values[all_values.notna() &(all_values >= 1.0)]
 
     category_values = [
         ((all_values >= 1) &(all_values <= 10)).sum(),
@@ -2904,17 +2898,8 @@ with main_tabs[1]:
         # ALL RAINFALL VALUES
         # ----------------------------------------------------
         
-        all_values = (
-            all_daily[months]
-            .stack()
-        )
-        
-        all_values = all_values[
-            all_values.notna()
-            &
-            (all_values >= 1)
-        ]
-        
+        all_values = (all_daily[months].stack())
+        all_values = all_values[all_values.notna()&(all_values >= 1.0)]
         
         # ----------------------------------------------------
         # RAINFALL CATEGORY
@@ -3217,26 +3202,18 @@ with main_tabs[2]:
                 station_result["all_daily"]
             )
 
-            all_values = (
-                all_daily[months]
-                .stack()
-            )
-
-            all_values = all_values[
-                all_values.notna()
-                &
-                (all_values >= VALID_MIN)
-            ]
+            all_values = (all_daily[months].stack())
+            all_values = all_values[all_values.notna()&(all_values >= 1.0)]
 
             category_values = [
                 # LIGHT RAIN
-                ((all_values >= 1) & (all_values <= 10)).sum(),
+                ((all_values >= 1.0) & (all_values <= 10.0)).sum(),
                 # MODERATE RAIN
-                ((all_values > 10) & (all_values <= 30)).sum(),
+                ((all_values > 10.0) & (all_values <= 30.0)).sum(),
                 # HEAVY RAIN
-                ((all_values > 30) & (all_values <= 60)).sum(),
+                ((all_values > 30.0) & (all_values <= 60.0)).sum(),
                 # VERY HEAVY RAIN
-                (all_values > 60).sum()]
+                (all_values > 60.0).sum()]
 
             comparison_data[station] = {
 
