@@ -3277,16 +3277,12 @@ with main_tabs[2]:
             ]
 
             category_values = [
-
                 # LIGHT RAIN
                 ((all_values >= 1) & (all_values <= 10)).sum(),
-
                 # MODERATE RAIN
                 ((all_values > 10) & (all_values <= 30)).sum(),
-
                 # HEAVY RAIN
                 ((all_values > 30) & (all_values <= 60)).sum(),
-
                 # VERY HEAVY RAIN
                 (all_values > 60).sum()]
 
@@ -4046,6 +4042,8 @@ with main_tabs[2]:
                                 wedgeprops={
                                     "edgecolor": "black",
                                     "linewidth": 0.8
+                                st.write("CATEGORY LABELS:", category_labels)
+                                st.write("CATEGORY VALUES:", category_values)
                                 }
                             )
 
