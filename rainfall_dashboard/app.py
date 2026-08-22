@@ -2911,78 +2911,65 @@ with main_tabs[1]:
             &
             (all_daily_values >= VALID_MIN)
         ]
-    
+            
         # ----------------------------------------------------
-        # CATEGORY LABELS
+        # ALL RAINFALL VALUES
         # ----------------------------------------------------
-    
+        
+        all_values = (
+            all_daily[months]
+            .stack()
+        )
+        
+        all_values = all_values[
+            all_values.notna()
+            &
+            (all_values >= 1)
+        ]
+        
+        
+        # ----------------------------------------------------
+        # RAINFALL CATEGORY
+        # ----------------------------------------------------
+        
         category_labels = [
             "Light Rain (1.0–10.0 mm)",
             "Moderate Rain (>10.0–30.0 mm)",
             "Heavy Rain (>30.0–60.0 mm)",
             "Very Heavy Rain (>60 mm)"
         ]
-    
-        # ----------------------------------------------------
-        # CATEGORY VALUES
-        # ----------------------------------------------------
-    
-        category_values = [
-                (all_daily_values >= 1)
-                &
-                (all_daily_values <= 10)
-            ).sum(),
-    
-            (
-                (all_daily_values > 10)
-                &
-                (all_daily_values <= 30)
-            ).sum(),
-    
-            (
-                (all_daily_values > 30)
-                &
-                (all_daily_values <= 60)
-            ).sum(),
-    
-            (
-                all_daily_values > 60
-            ).sum()
-        ]
-    
-        total_days = sum(
-            category_values
-        )
-        # ----------------------------------------------------
-        # PIE CHART
-        # ----------------------------------------------------
-                
-        pie_labels = [
-            "Light Rain (1.0–10.0 mm)",
-            "Moderate Rain (>10.0–30.0 mm)",
-            "Heavy Rain (>30.0–60.0 mm)",
-            "Very Heavy Rain (>60 mm)"
-        ]
         
-        pie_values = [
+        category_values = [
             ((all_values >= 1) & (all_values <= 10)).sum(),
             ((all_values > 10) & (all_values <= 30)).sum(),
             ((all_values > 30) & (all_values <= 60)).sum(),
             (all_values > 60).sum()
         ]
         
-        total_rainy_days = sum(pie_values)
+        total_rainy_days = sum(category_values)
+        
+        
+        # ----------------------------------------------------
+        # PIE CHART
+        # ----------------------------------------------------
         
         if total_rainy_days > 0:
         
-            fig, ax = plt.subplots(figsize=(9, 7))
+            fig, ax = plt.subplots(
+                figsize=(9, 7)
+            )
         
-            fig.patch.set_facecolor(BG_COLOR)
-            ax.set_facecolor(BG_COLOR)
+            fig.patch.set_facecolor(
+                BG_COLOR
+            )
+        
+            ax.set_facecolor(
+                BG_COLOR
+            )
         
             wedges, texts, autotexts = ax.pie(
-                pie_values,
-                labels=pie_labels,
+                category_values,
+                labels=category_labels,
                 autopct="%1.1f%%",
                 startangle=90,
                 counterclock=False,
@@ -2993,8 +2980,14 @@ with main_tabs[1]:
             )
         
             for autotext in autotexts:
-                autotext.set_fontsize(9)
-                autotext.set_fontweight("bold")
+        
+                autotext.set_fontsize(
+                    9
+                )
+        
+                autotext.set_fontweight(
+                    "bold"
+                )
         
             ax.set_title(
                 f"{file_name}\n"
